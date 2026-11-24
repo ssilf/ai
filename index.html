@@ -2,99 +2,233 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Чат с ИИ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Котик-ИИ 🐱</title>
 <style>
-:root{
-  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
-  --bg:#faf9f5;--surface:#ffffff;--text:#1f1e1d;--muted:#6b6a66;--accent:#c96442;--accent-text:#ffffff;--user:#efe9de;--border:#e4e0d6;
-  color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){--bg:#262624;--surface:#30302e;--text:#f1efe8;--muted:#a5a39b;--accent:#d97757;--accent-text:#1f1e1d;--user:#3a3935;--border:#44423e;color-scheme:dark;}
-}
-:root[data-theme="dark"]{--bg:#262624;--surface:#30302e;--text:#f1efe8;--muted:#a5a39b;--accent:#d97757;--accent-text:#1f1e1d;--user:#3a3935;--border:#44423e;color-scheme:dark;}
+:root{--bg:#fff7ef;--panel:#ffffff;--text:#2b2420;--muted:#8a7b70;--accent:#f08a4b;--accent2:#ffd9bd;--user:#ffe8d4;--border:#f0dccb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1916;--panel:#2a2420;--text:#f4ebe3;--muted:#b09f92;--accent:#f39a60;--accent2:#4a3427;--user:#4a3427;--border:#40352d;color-scheme:dark}}
+*{box-sizing:border-box}
 html,body{height:100%;margin:0}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
-header h1{font-size:17px;margin:0;font-weight:600}
-header button{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:14px}
-#log{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;max-width:820px;width:100%;margin:0 auto;box-sizing:border-box}
-.msg{max-width:88%;padding:10px 14px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}
-.user{align-self:flex-end;background:var(--user)}
-.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--border)}
-.err{color:#b3261e}
-.hint{color:var(--muted);text-align:center;margin:auto;max-width:420px}
-form,.bar{display:flex;gap:10px;padding:12px 18px;border-top:1px solid var(--border);max-width:820px;width:100%;margin:0 auto;box-sizing:border-box}
-textarea{flex:1;resize:none;max-height:160px;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;box-sizing:border-box}
-#send{background:var(--accent);color:var(--accent-text);border:0;border-radius:12px;padding:0 18px;font:inherit;font-weight:600;cursor:pointer}
-#send:disabled{opacity:.5;cursor:default}
+body{background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--panel)}
+header h1{font-size:18px;margin:0;flex:1}
+header small{display:block;color:var(--muted);font-weight:400;font-size:12px}
+.btn{background:var(--accent2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 11px;cursor:pointer;font:inherit;font-size:14px}
+.btn:hover{filter:brightness(.96)}
+#cat{width:52px;height:46px;flex:none}
+#cat .eye{transform-origin:center;transform-box:fill-box;animation:blink 4s infinite}
+#cat .tail{transform-origin:6px 38px;animation:wag 1.6s ease-in-out infinite}
+#cat.think .eye{animation:none;transform:scaleY(.25)}
+#cat.think .tail{animation-duration:.4s}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes wag{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(14deg)}}
+#log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;max-width:860px;width:100%;margin:0 auto}
+.msg{max-width:90%;padding:10px 14px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.user{align-self:flex-end;background:var(--user);border-bottom-right-radius:4px}
+.bot{align-self:flex-start;background:var(--panel);border:1px solid var(--border);border-bottom-left-radius:4px}
+.bot pre{background:rgba(0,0,0,.08);padding:10px;border-radius:8px;overflow-x:auto;white-space:pre;margin:8px 0}
+.bot code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px}
+.sys{align-self:center;color:var(--muted);font-size:13px;text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bar{display:flex;gap:8px;padding:10px 16px;border-top:1px solid var(--border);background:var(--panel)}
+.bar>div{display:flex;gap:8px;max-width:860px;width:100%;margin:0 auto}
+textarea{flex:1;resize:none;min-height:44px;max-height:150px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit}
+#send{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:0 18px;font:inherit;font-weight:600;cursor:pointer}
+#send:disabled{opacity:.5}
+#panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;z-index:20;padding:16px}
+#panel.open{display:flex}
+#box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px;max-width:460px;width:100%}
+#box h2{margin:0 0 8px;font-size:18px}
+#box label{display:block;margin:12px 0 4px;font-size:14px;color:var(--muted)}
+#box input,#box select{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit}
+#box p{font-size:13px;color:var(--muted);margin:10px 0}
+.row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.fall{position:fixed;top:-40px;font-size:28px;pointer-events:none;z-index:30;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.dots span{display:inline-block;animation:dot 1s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,100%{opacity:.2}50%{opacity:1}}
 </style>
 </head>
 <body>
-<header><h1>Чат с ИИ</h1><button id="clear" type="button">Новый чат</button></header>
-<div id="log"><div class="hint" id="hint">Задайте любой вопрос: про код, учёбу, текст, идеи — я отвечу.</div></div>
-<div class="bar">
-  <textarea id="inp" rows="1" placeholder="Напишите сообщение…"></textarea>
-  <button id="send" type="button">Отправить</button>
-</div>
+<header>
+  <svg id="cat" viewBox="0 0 60 52" aria-hidden="true">
+    <path class="tail" d="M6 38 C-4 32 0 18 8 22" fill="none" stroke="#f08a4b" stroke-width="5" stroke-linecap="round"/>
+    <polygon points="14,18 16,2 28,12" fill="#f08a4b"/><polygon points="46,18 44,2 32,12" fill="#f08a4b"/>
+    <ellipse cx="30" cy="30" rx="19" ry="16" fill="#f08a4b"/>
+    <ellipse class="eye" cx="23" cy="28" rx="3" ry="4" fill="#2b2420"/><ellipse class="eye" cx="37" cy="28" rx="3" ry="4" fill="#2b2420"/>
+    <circle cx="24" cy="26.5" r="1" fill="#fff"/><circle cx="38" cy="26.5" r="1" fill="#fff"/>
+    <polygon points="28,34 32,34 30,37" fill="#ff8fa3"/>
+    <path d="M30 37 Q27 41 24 39 M30 37 Q33 41 36 39" fill="none" stroke="#2b2420" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M10 34 L20 35 M10 39 L20 37 M50 34 L40 35 M50 39 L40 37" stroke="#fff" stroke-width="1" opacity=".8"/>
+  </svg>
+  <h1>Котик-ИИ <small id="mode">офлайн-режим</small></h1>
+  <button class="btn" id="catrain" title="Дождь из котиков">🐱 Котики!</button>
+  <button class="btn" id="settings">⚙️ Ключ</button>
+  <button class="btn" id="clear">Новый чат</button>
+</header>
+
+<div id="log"></div>
+
+<div class="bar"><div>
+  <textarea id="inp" rows="1" placeholder="Напишите: привет… (Enter — отправить)"></textarea>
+  <button id="send">Отправить</button>
+</div></div>
+
+<div id="panel"><div id="box">
+  <h2>🔑 Подключить умный ИИ (Claude)</h2>
+  <p>Без ключа котик отвечает в простом офлайн-режиме. С ключом Anthropic он становится по-настоящему умным: отвечает на любые вопросы, пишет код и тексты.</p>
+  <label for="key">API-ключ Anthropic</label>
+  <input id="key" type="password" placeholder="sk-ant-..." autocomplete="off">
+  <label for="model">Модель</label>
+  <select id="model">
+    <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (умный и быстрый)</option>
+    <option value="claude-opus-5-5">Claude Opus 5.5 (самый умный)</option>
+    <option value="claude-haiku-5-5">Claude Haiku 5.5 (самый быстрый и дешёвый)</option>
+  </select>
+  <p>Ключ хранится только в вашем браузере и уходит только на api.anthropic.com. Получить ключ: console.anthropic.com. Запросы по API платные.</p>
+  <div class="row"><button class="btn" id="delkey">Удалить ключ</button><button class="btn" id="close">Отмена</button><button class="btn" id="save" style="background:var(--accent);color:#fff">Сохранить</button></div>
+</div></div>
+
 <script>
 (function(){
-  var SYS = "Ты — умный, добрый и честный ИИ-ассистент. Отвечай на языке пользователя, по делу и понятно. Для кода используй простые блоки. Если не уверен — так и скажи.";
-  var log = document.getElementById("log"), inp = document.getElementById("inp"),
-      send = document.getElementById("send"), clearBtn = document.getElementById("clear");
-  var history = [], sample = null, busy = false, ctrl = null;
+"use strict";
+var $ = function(id){return document.getElementById(id)};
+var log=$("log"), inp=$("inp"), sendBtn=$("send"), cat=$("cat");
+var history=[], busy=false;
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}},del:function(k){try{localStorage.removeItem(k)}catch(e){}}};
 
-  claude.use("sample").then(function(s){
-    sample = s;
-    if(!s){ add("bot","Эта страница работает только внутри claude.ai.", true); send.disabled = true; }
-  }).catch(function(){ sample = null; });
+var SYSTEM="Ты — Котик-ИИ: очень умный, добрый и честный ассистент с кошачьим характером. Отвечай на языке собеседника, по делу, точно и понятно; сложное объясняй по шагам. Для кода используй блоки ```. Иногда можно добавить уместный эмодзи кота 🐱, но не мешай пользе. Если не уверен — честно скажи об этом.";
 
-  function add(role, text, isErr){
-    var h = document.getElementById("hint"); if(h) h.remove();
-    var d = document.createElement("div");
-    d.className = "msg " + (role === "user" ? "user" : "bot") + (isErr ? " err" : "");
-    d.textContent = text;
-    log.appendChild(d); log.scrollTop = log.scrollHeight;
-    return d;
+/* ---------- ОФЛАЙН-МОЗГ ---------- */
+var FACTS=["Кошки спят 12–16 часов в сутки.","Мурлыканье кошки (25–150 Гц) может успокаивать и людей.","У кошек около 230 костей, а у человека — 206.","Кошка может прыгнуть в высоту примерно в пять раз больше своего роста.","Усы кошки помогают ей измерять ширину прохода.","Нос у каждой кошки уникален, как отпечаток пальца у человека.","Кошки почти не чувствуют сладкого вкуса.","Кошачий хвост — индикатор настроения: поднятый трубой означает дружелюбие."];
+var JOKES=["— Почему программисты любят котов? — Потому что они тоже роняют всё со стола, а потом говорят «это не баг, это фича».","Кот сел на клавиатуру и написал код. Он не компилируется, зато очень уверенно выглядит.","Сколько котов нужно, чтобы поменять лампочку? Ни одного: они просто сбросят её со стола.","Я бы рассказал шутку про UDP, но боюсь, что она до вас не дойдёт."];
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function safeMath(t){
+  var m=t.replace(/,/g,".").replace(/[×х]/g,"*").replace(/÷/g,"/").replace(/\^/g,"**");
+  var found=m.match(/[-+*/().\d\s%]{3,}/);
+  if(!found) return null;
+  var e=found[0].trim();
+  if(!/\d/.test(e)||!/[-+*/%]/.test(e)) return null;
+  try{var r=Function('"use strict";return ('+e+')')();if(typeof r==="number"&&isFinite(r))return e+" = "+(Math.round(r*1e10)/1e10)}catch(x){}
+  return null;
+}
+function offline(q){
+  var t=q.toLowerCase().trim();
+  var math=safeMath(t); if(math) return "Считаю: "+math+" 🧮";
+  if(/^(привет|здаров|здравствуй|хай|hello|hi|hey|добрый|салют)/.test(t)) return pick(["Мяу! Привет! 🐱 Чем помочь?","Привет-привет! Мур 😺 О чём поболтаем?","Здравствуй! Я Котик-ИИ. Спроси что-нибудь или попроси факт про котов."]);
+  if(/как дела|как ты|как жизнь/.test(t)) return "Отлично! Только что поспал 14 часов, теперь готов помогать 😸 А у тебя как?";
+  if(/кто ты|как тебя зовут|твое имя|твоё имя/.test(t)) return "Я Котик-ИИ 🐱. Без API-ключа я простой офлайн-котик, а с ключом Anthropic (кнопка ⚙️ Ключ) становлюсь по-настоящему умным.";
+  if(/врем|час(ов)? сейчас|который час/.test(t)) return "Сейчас "+new Date().toLocaleTimeString("ru-RU")+" ⏰";
+  if(/дата|какое сегодня|какой сегодня|число|день недели/.test(t)) return "Сегодня "+new Date().toLocaleDateString("ru-RU",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+" 📅";
+  if(/факт|интересн|расскажи про кот|кошк|кот(ик|ы|а)?\b/.test(t)) return "Факт про кошек: "+pick(FACTS)+" 🐾";
+  if(/шутк|анекдот|рассмеши|смешн/.test(t)) return pick(JOKES)+" 😹";
+  if(/спасибо|благодар/.test(t)) return "Мур-мур, всегда пожалуйста! 😻";
+  if(/пока|до свидан|удачи/.test(t)) return "Пока! Возвращайся, я буду ждать у монитора 🐈";
+  if(/помо(щь|ги)|что ты умеешь|что умеешь/.test(t)) return "Офлайн я умею: здороваться, считать (например, 12*(3+4)), говорить время и дату, шутить и рассказывать факты о котиках. Для настоящих умных ответов подключи ключ Anthropic через ⚙️ Ключ.";
+  return "Мяу? Это вопрос для настоящего ИИ 🐱 Я в офлайн-режиме и умею только простое (привет, факты, шутки, математика). Нажми ⚙️ Ключ и подключи Claude — тогда отвечу на всё.";
+}
+
+/* ---------- ВЫВОД ---------- */
+function esc(s){return s.replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function render(text){
+  var parts=text.split(/```/), out="";
+  for(var i=0;i<parts.length;i++){
+    if(i%2===1){var body=parts[i].replace(/^[\w+#-]*\n/,"");out+="<pre><code>"+esc(body.replace(/\n$/,""))+"</code></pre>"}
+    else{out+=esc(parts[i]).replace(/`([^`\n]+)`/g,"<code>$1</code>").replace(/\*\*([^*\n]+)\*\*/g,"<b>$1</b>")}
   }
+  return out;
+}
+function add(role,text,html){
+  var d=document.createElement("div");
+  d.className="msg "+(role==="user"?"user":role==="sys"?"sys":"bot");
+  if(html) d.innerHTML=text; else if(role==="bot") d.innerHTML=render(text); else d.textContent=text;
+  log.appendChild(d); log.scrollTop=log.scrollHeight; return d;
+}
+function welcome(){
+  log.innerHTML="";
+  add("sys","Привет! Я Котик-ИИ 🐱 Напишите мне что-нибудь. Для умного режима нажмите ⚙️ Ключ.");
+  var c=document.createElement("div");c.className="chips";
+  ["Привет!","Расскажи факт про котов","Расскажи шутку","12*(3+4)"].forEach(function(s){
+    var b=document.createElement("button");b.className="btn";b.textContent=s;
+    b.onclick=function(){inp.value=s;ask()};c.appendChild(b)});
+  log.appendChild(c);
+}
+function updateMode(){
+  var k=store.get("kk_key");
+  $("mode").textContent=k?("умный режим · "+(store.get("kk_model")||"claude-sonnet-5-5")):"офлайн-режим";
+}
 
-  async function ask(){
-    var text = inp.value.trim();
-    if(!text || busy || !sample) return;
-    inp.value = ""; inp.style.height = "auto";
-    add("user", text);
-    history.push({role:"user", content:text});
-    var msgs = history.map(function(m, i){
-      return i === 0 ? {role:m.role, content: SYS + "\n\n" + m.content} : m;
-    });
-    var bubble = add("bot", "Думаю…");
-    busy = true; send.disabled = true; ctrl = new AbortController();
-    try{
-      var res = await sample(msgs, {
-        cache:false, signal:ctrl.signal, modelTier:"default",
-        onText:function(t){ bubble.textContent = t.text; log.scrollTop = log.scrollHeight; }
-      });
-      bubble.textContent = res.text;
-      history.push({role:"assistant", content:res.text});
-    }catch(e){
-      history.pop();
-      bubble.classList.add("err");
-      bubble.textContent = (e && e.code === "rate_limited") ? "Слишком много запросов, подождите немного." :
-                           (e && e.code === "not_granted") ? "Доступ не разрешён." : "Ошибка. Попробуйте ещё раз.";
-    }finally{
-      busy = false; send.disabled = false; inp.focus();
-    }
-  }
-
-  send.addEventListener("click", ask);
-  inp.addEventListener("keydown", function(e){ if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); ask(); } });
-  inp.addEventListener("input", function(){ inp.style.height = "auto"; inp.style.height = Math.min(inp.scrollHeight,160) + "px"; });
-  clearBtn.addEventListener("click", function(){
-    if(ctrl) ctrl.abort();
-    history = []; log.innerHTML = '<div class="hint" id="hint">Задайте любой вопрос: про код, учёбу, текст, идеи — я отвечу.</div>';
+/* ---------- ЗАПРОС К CLAUDE ---------- */
+async function claude(){
+  var key=store.get("kk_key"), model=store.get("kk_model")||"claude-sonnet-5-5";
+  var r=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:model,max_tokens:4096,system:SYSTEM,messages:history})
   });
+  var data=await r.json().catch(function(){return {}});
+  if(!r.ok){
+    var m=(data&&data.error&&data.error.message)||("HTTP "+r.status);
+    if(r.status===401) m="Неверный API-ключ. Проверьте его в ⚙️ Ключ.";
+    throw new Error(m);
+  }
+  return (data.content||[]).map(function(b){return b.type==="text"?b.text:""}).join("");
+}
+
+async function ask(){
+  var t=inp.value.trim();
+  if(!t||busy) return;
+  inp.value="";inp.style.height="auto";
+  var chips=log.querySelector(".chips"); if(chips) chips.remove();
+  add("user",t);
+  history.push({role:"user",content:t});
+  busy=true;sendBtn.disabled=true;cat.classList.add("think");
+  var bubble=add("bot",'<span class="dots"><span>●</span><span>●</span><span>●</span></span>',true);
+  try{
+    var ans;
+    if(store.get("kk_key")){ans=await claude()}
+    else{await new Promise(function(r){setTimeout(r,450)});ans=offline(t)}
+    bubble.innerHTML=render(ans);
+    history.push({role:"assistant",content:ans});
+    if(/мяу|кот|🐱|😸|😺/i.test(ans)&&!store.get("kk_key")) rain(5);
+  }catch(e){
+    history.pop();
+    bubble.textContent="Ошибка: "+e.message;
+  }finally{
+    busy=false;sendBtn.disabled=false;cat.classList.remove("think");log.scrollTop=log.scrollHeight;inp.focus();
+  }
+}
+
+/* ---------- КОТИКИ ---------- */
+function rain(n){
+  var e=["🐱","😺","😸","😻","🐈","🐾","😽","🐈‍⬛"];
+  for(var i=0;i<n;i++){(function(){
+    var s=document.createElement("span");s.className="fall";s.textContent=pick(e);
+    s.style.left=Math.random()*95+"vw";s.style.animationDuration=(2.5+Math.random()*2.5)+"s";
+    s.style.animationDelay=(Math.random()*.8)+"s";s.style.fontSize=(22+Math.random()*24)+"px";
+    document.body.appendChild(s);setTimeout(function(){s.remove()},6500);
+  })()}
+}
+
+/* ---------- СОБЫТИЯ ---------- */
+sendBtn.onclick=ask;
+inp.addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask()}});
+inp.addEventListener("input",function(){inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeight,150)+"px"});
+$("catrain").onclick=function(){rain(30)};
+$("clear").onclick=function(){history=[];welcome()};
+$("settings").onclick=function(){$("key").value=store.get("kk_key")||"";$("model").value=store.get("kk_model")||"claude-sonnet-5-5";$("panel").classList.add("open")};
+$("close").onclick=function(){$("panel").classList.remove("open")};
+$("save").onclick=function(){
+  var k=$("key").value.trim();
+  if(k) store.set("kk_key",k); else store.del("kk_key");
+  store.set("kk_model",$("model").value);
+  $("panel").classList.remove("open");updateMode();rain(12);
+  add("sys",k?"Умный режим включён ✨ Теперь отвечает Claude.":"Ключ не задан, работает офлайн-режим.");
+};
+$("delkey").onclick=function(){store.del("kk_key");$("key").value="";updateMode();add("sys","Ключ удалён.")};
+
+welcome();updateMode();
 })();
 </script>
 </body>
